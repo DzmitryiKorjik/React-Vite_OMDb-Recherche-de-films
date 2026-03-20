@@ -2,7 +2,7 @@ import { useState } from 'react';
 import MovieCard from './components/MovieCard';
 import './App.css';
 
-const API_KEY = '35a14e27'; // Remplacez par votre propre clé API OMDb (gratuit sur omdbapi.com)
+const API_KEY = import.meta.env.VITE_API_KEY;
 const API_URL = 'https://www.omdbapi.com/';
 
 function App() {
@@ -31,8 +31,8 @@ function App() {
             while (true) {
                 const res = await fetch(
                     `${API_URL}?s=${encodeURIComponent(
-                        title
-                    )}&apikey=${API_KEY}&page=${page}`
+                        title,
+                    )}&apikey=${API_KEY}&page=${page}`,
                 );
                 const data = await res.json();
                 console.log('Réponse API recherche:', data);
@@ -69,14 +69,14 @@ function App() {
                 allMovies.map(async (m) => {
                     try {
                         const r = await fetch(
-                            `${API_URL}?i=${m.imdbID}&plot=short&apikey=${API_KEY}`
+                            `${API_URL}?i=${m.imdbID}&plot=short&apikey=${API_KEY}`,
                         );
                         const data = await r.json();
                         // Si l'API retourne une erreur, utiliser les données de base
                         if (data.Response === 'False') {
                             console.warn(
                                 `Erreur API pour ${m.imdbID}:`,
-                                data.Error
+                                data.Error,
                             );
                             return m; // Retourner les données de recherche basiques
                         }
@@ -85,7 +85,7 @@ function App() {
                         console.warn(`Erreur fetch pour ${m.imdbID}:`, err);
                         return m; // Retourner les données de recherche basiques
                     }
-                })
+                }),
             );
 
             console.log('Films récupérés:', detailedMovies);
@@ -93,7 +93,7 @@ function App() {
         } catch (error) {
             console.error('Error fetching data:', error);
             setMessage(
-                "Erreur lors de l'appel à l'API. Vérifiez votre connexion et votre clé OMDb."
+                "Erreur lors de l'appel à l'API. Vérifiez votre connexion et votre clé OMDb.",
             );
         } finally {
             setIsLoading(false);
